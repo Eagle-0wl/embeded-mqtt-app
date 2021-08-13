@@ -2,22 +2,22 @@ config mqtt 'mqtt'
 	option enable '1'
 	option adress '127.0.0.1'
 	option local_port '1883'
-	option username 'testuotojas'
-	option password 'testpswd'
 	option use_tls_ssl '1'
-	option tls_type 'cert'
-	option _device_sec_files '1'
-	option tls_version 'all'
-
-config topic
-	option qos '1'
-	option topic 'topic/test'
-
-config topic
-	option topic 'topic/test2'
-	option qos '1'
+	option tls_type 'psk'
+	option psk 'dad'
+	option identity 'hsfsdaf'
+	option client_enabled '1'
+	option username '1234567890a12345'
+	option password 'testpswd01245387'
 
 config topic
 	option qos '0'
-	option topic 'topic/#'
+	option topic 'test/'
 
+config topic
+	option topic 'test/test2'
+	option qos '1'
+
+config topic
+	option topic 'test/test3'
+	option qos '2'
