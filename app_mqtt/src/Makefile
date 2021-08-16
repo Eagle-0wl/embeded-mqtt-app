@@ -1,5 +1,5 @@
 BIN:=app_mqtt
-#LDFLAGS:=-liotp-as-device -lblobmsg_json -lubox -lubus
+LDFLAGS:=-lmosquitto
 SRC:=$(wildcard *.c)
 OBJS:=$(SRC:.c=.o)
 
@@ -8,6 +8,6 @@ OBJS:=$(SRC:.c=.o)
 all: $(BIN)
 
 $(BIN): $(OBJS)
-	$(CC) -o $@ $^ #$(LDFLAGS) 
+	$(CC) -o $@ $^ $(LDFLAGS) 
 clean:
 	rm -f $(BIN) $(OBJS)
