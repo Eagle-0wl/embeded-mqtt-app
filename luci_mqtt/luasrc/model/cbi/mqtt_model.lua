@@ -167,12 +167,10 @@ enb = s2:taboption("misc", Flag, "enable", translate("Enable"))
 enb.rmempty = false
 
 adress = s2:taboption( "misc", Value, "adress", translate("Broker adress"))
-adress.default = "127.0.0.1"
---adress.placeholder = "127.0.0.1"
+adress.maxlength = "256"
 adress.datatype = "string"
 
 local_port = s2:taboption( "misc", Value, "local_port", translate("Local Port"))
-local_port.default = "1883"
 local_port.placeholder = "1883"
 local_port.datatype = "port"
 
@@ -180,9 +178,11 @@ username = s2:taboption( "misc", Value, "username", translate("Username"))
 username.default = "testuotojas"
 username.placeholder = "testuotojas"
 username.datatype = "string"
+username.maxlength = "256"
 
 password = s2:taboption( "misc", Value, "password", translate("Password"))
 password.placeholder = "password"
 password.datatype = "string"
+password.maxlength = "256"
 
 return m
