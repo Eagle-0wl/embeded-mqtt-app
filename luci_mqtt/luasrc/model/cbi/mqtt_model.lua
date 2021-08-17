@@ -27,7 +27,7 @@ function s2.cfgsections(self)
 	return {"mqtt"}
 end
 ---------------------------- Security Tab ----------------------------
-
+--[[
 use_tls_ssl = s2:taboption("security", Flag, "use_tls_ssl", translate("Use TLS/SSL"), translate("Mark to use TLS/SSL for connection"))
 use_tls_ssl.rmempty = false
 function use_tls_ssl.write(self, section, value)
@@ -133,6 +133,11 @@ o:depends({use_tls_ssl = "1", tls_type = "psk"})
 
 
 client_enabled = s2:taboption("client", Flag, "client_enabled", translate("Enable"), translate("Enable connection to remote bridge"))
+--]]
+
+use_tls_ssl = s2:taboption("client", Flag, "use_tls_ssl", translate("Use TLS/SSL"), translate("Mark to use TLS/SSL for connection"))
+use_tls_ssl.rmempty = false
+
 st = m:section(TypedSection, "topic", translate("Topics"), translate("") )
 st.addremove = true
 st.anonymous = true
