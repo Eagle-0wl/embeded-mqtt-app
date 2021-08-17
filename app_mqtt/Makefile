@@ -19,10 +19,12 @@ endef
 define Package/app_mqtt/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_DIR) $(1)/etc/config
-	#$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_DIR) $(1)/etc/app_mqtt_crt
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/app_mqtt $(1)/usr/bin
-	#$(INSTALL_BIN) ./files/mqtt.init $(1)/etc/init.d/mqtt
-	#$(INSTALL_CONF) ./files/mosquitto $(1)/etc/config/mosquitto
+	$(INSTALL_BIN) ./files/appmqtt.init $(1)/etc/init.d/appmqtt
+	$(INSTALL_BIN) ./files/mosquitto.org.crt $(1)/etc/app_mqtt_crt/mosquitto.org.crt
+	#$(INSTALL_CONF) ./files/mosquitto.config $(1)/etc/config/mosquitto
 endef
 
 $(eval $(call BuildPackage,app_mqtt))
