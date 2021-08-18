@@ -4,8 +4,6 @@ local m, s, s2
 
 m = Map("mosquitto_client")
 
----------------------------- Config ----------------------------
-
 s2 = m:section(NamedSection, "mqtt_client", "mqtt_client", translate("Config"), "")
 s2:tab("misc",  translate("Subscriber"))
 
@@ -61,7 +59,6 @@ local_port.placeholder = "1883"
 local_port.datatype = "port"
 
 username = s2:taboption( "misc", Value, "username", translate("Username"))
-username.default = "testuotojas"
 username.placeholder = "testuotojas"
 username.datatype = "string"
 username.maxlength = "256"
