@@ -2,6 +2,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <syslog.h>
+#include <string.h>
 #include <mosquitto.h>
 
 volatile int interrupt = 0;
@@ -123,6 +124,7 @@ extern void save_message_to_file(char *message)
         syslog (LOG_WARNING, "Failed to open mqttmessages.htm");
         exit(EXIT_FAILURE);
     }
+    //fclose(file);
 }
 
 void on_connect(struct mosquitto *mosq, void *obj, int rc) {
@@ -176,13 +178,17 @@ int start_mossquitto (struct Topic *head, struct Configuration *config)
 	if(rc) {
         syslog(LOG_ERR, "Could not connect to Broker");
 		goto cleanup2;
-	}
+	}else{
+         syslog(LOG_ERR, "Connection successful");
+    }
     
 	rc = mosquitto_loop_start(mosq);
-    	if(rc) {
+    if(rc) {
         syslog(LOG_ERR, "Failed to start mosquitto loop");
 		goto cleanup1;
-	}
+	}else{
+        syslog(LOG_ERR, "Loop started");
+    }
 
     while(!interrupt) {  
     
@@ -202,6 +208,7 @@ int main(void)
 {
     int rc =0;
     struct Topic *head = NULL;
+    struct Topic *tmp;
     struct Configuration config;
     struct sigaction action;
     
@@ -218,5 +225,17 @@ int main(void)
     }
     rc = start_mossquitto (head,&config);
 cleanup:
+    while(head != NULL) { 
+        free(head->qos);
+        free(head->topic);                
+        tmp= head;
+        head = head->next;
+        free (tmp);
+    }
+    free (config.address);
+    free (config.password);
+    free (config.port);
+    free (config.username);
+    free (config.use_tls);
     return rc;   
 }                                                            
