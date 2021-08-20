@@ -156,7 +156,7 @@ int start_mossquitto (struct Topic *head, struct Configuration *config)
     }else{
         syslog (LOG_INFO,"Mosquitto initialized successfuly");
     }
-    mosq = mosquitto_new("subscribe-test", true, head);
+    mosq = mosquitto_new("Mqtt-sub-program", true, head);
     if (config->username!=NULL  && config->password!=NULL)  
         if (mosquitto_username_pw_set(mosq, config->username ,config->password)==MOSQ_ERR_SUCCESS)
             syslog(LOG_INFO, "User name and password added successfuly");
