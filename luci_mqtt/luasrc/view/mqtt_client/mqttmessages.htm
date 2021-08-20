@@ -1,1 +1,47 @@
-<p><p> 
+<%-
+local sqlite = require "lsqlite3"
+local dbFilePath = "/etc/app_mqtt_crt/messages.db"
+local sys = require "luci.sys"
+message_data_list = {}
+
+local db = sqlite.open(dbFilePath)
+local query = "SELECT * FROM Messages"
+if db:prepare(query) then
+    for row in db:nrows(query) do
+        message_data_list[#message_data_list+1] = row
+    end
+end
+db:close()
+
+-%>
+
+<h3 class="content-title" onclick="toggleContent(this, '<%=self.config%>.<%=self.sectiontype%>.toggle')">
+    <div class="toggle-arrow expanded"><img src="<%=media%>/img/icons/arrow-toggle.svg"></div>
+    <span>Messages</span>
+</h3>
+
+<div class="table-wrapper toggle-content">
+    <br><br>
+    <table>
+        <thead>
+        	<th style="text-align: left;"> <label class="label-cell">ID</label> </th>
+		<th style="text-align: left;"> <label class="label-cell">Topic</label> </th>
+		<th style="text-align: left;"> <label class="label-cell">Message</label> </th>
+		<th style="text-align: left;"> <label class="label-cell">Time</label> </th>
+		
+        </thead>
+        <tbody>
+            <% for i=1,#message_data_list do %>
+            <tr>
+                <td style="text-align: left;"><%=message_data_list[i].id%></td>
+                <td style="text-align: left;"><%=message_data_list[i].Topic%></td>
+                <td style="text-align: left;"><%=message_data_list[i].Message%></td>
+                <td style="text-align: left;"><%=message_data_list[i].Time%></td>
+            </tr>
+            <% end %>
+        </tbody>
+        
+    </table>
+    
+</div>
+<br>

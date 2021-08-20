@@ -1,5 +1,5 @@
 BIN:=app_mqtt
-LDFLAGS:=-lmosquitto
+LDFLAGS:=-lmosquitto -lsqlite3
 SRC:=$(wildcard *.c)
 OBJS:=$(SRC:.c=.o)
 

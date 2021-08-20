@@ -9,7 +9,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/app_mqtt
 	CATEGORY:=Base system
 	TITLE:=app_mqtt
-	DEPENDS:=+libmosquitto
+	DEPENDS:=+libmosquitto +libsqlite3
 endef
 
 define Package/app_mqtt/description
@@ -22,6 +22,8 @@ define Package/app_mqtt/install
 	$(INSTALL_DIR) $(1)/etc/init.d/
 	$(INSTALL_DIR) $(1)/etc/app_mqtt_crt/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/app_mqtt $(1)/usr/bin
+	#$(INSTALL_BIN) ./files/messages.db $(1)/etc/app_mqtt_crt/messages.db
+	
 	$(INSTALL_BIN) ./files/appmqtt.init $(1)/etc/init.d/appmqtt
 	$(INSTALL_BIN) ./files/mosquitto.org.crt $(1)/etc/app_mqtt_crt/mosquitto.org.crt
 	$(INSTALL_CONF) ./files/mosquitto_client.config $(1)/etc/config/mosquitto_client

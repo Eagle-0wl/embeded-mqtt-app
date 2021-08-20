@@ -4,8 +4,13 @@
 #include <syslog.h>
 #include <string.h>
 #include <mosquitto.h>
+#include <sqlite3.h>
 
+#define DBPATH "/etc/app_mqtt_crt/messages.db"
+#define CONFFILE "/etc/config/mosquitto_client"
+#define CERTPATH "/etc/app_mqtt_crt/mosquitto.org.crt"
 volatile int interrupt = 0;
+sqlite3 *data_base = NULL;
 
 struct Topic {
     char *topic;
@@ -69,9 +74,8 @@ int read_config_file(struct Topic **head, struct Configuration *config)
     char *topic=NULL;
     char *qos=NULL;
     char temp_string[256];
-    char *filename = "/etc/config/mosquitto_client";   //config file location
     FILE *file;    
-    file=fopen(filename,"r");               //opening file for read operation
+    file=fopen(CONFFILE,"r");               //opening file for read operation
 
     if (file == NULL){    //check if file opend
             syslog(LOG_ERR, "Could not open file");
@@ -113,26 +117,13 @@ int read_config_file(struct Topic **head, struct Configuration *config)
     return 0;
 }
 
-extern void save_message_to_file(char *message)
-{
-    FILE *file;
-    char *file_name="/usr/lib/lua/luci/view/mqtt_client/mqttmessages.htm";
-    if ((file = fopen(file_name, "a"))){
-        fprintf(file, "%s", message);
-        fclose(file);
-    }else{
-        syslog (LOG_WARNING, "Failed to open mqttmessages.htm");
-        exit(EXIT_FAILURE);
-    }
-    //fclose(file);
-}
-
 void on_connect(struct mosquitto *mosq, void *obj, int rc) {
     struct Topic *ptr = obj;
 	if(rc) {
-        syslog (LOG_ERR, "Couldn't connect to broker");
+        syslog (LOG_ERR, "Couldn't communicate to broker");
 		exit(EXIT_FAILURE);
 	}
+    
     while(ptr != NULL) {                 //start from the beginning
         mosquitto_subscribe(mosq, NULL, ptr->topic, atoi(ptr->qos));
         ptr = ptr->next;
@@ -140,14 +131,17 @@ void on_connect(struct mosquitto *mosq, void *obj, int rc) {
 }
 
 void on_message(struct mosquitto *mosq, void *obj, const struct mosquitto_message *msg) {
-    char *message;
-    size_t needed;
-    needed = snprintf(NULL, 0, "<p> Topic: %s Message: %s </p> \n", msg->topic, (char *) msg->payload) + 1;
-    message = (char*) malloc(needed);
-    sprintf(message, "<p> Topic: %s Message: %s </p> \n", msg->topic, (char *) msg->payload);
-    save_message_to_file (message);
-
-    free (message);
+    char *err = NULL;
+    const char *table_query = "CREATE TABLE Messages ( \ id integer primary key autoincrement not null,\ Topic varchar(250),\ Message varchar(250),\ Time timestamp default (datetime('now', 'localtime')) not null);";
+    char  *query;
+    sqlite3_exec(data_base, table_query, 0, NULL, err);     //creates database table if there is none
+    if (err != NULL)
+        syslog(LOG_WARNING ,"Failed to insert data into database"); 
+    query = sqlite3_mprintf("insert into Messages(Topic, Message) values ('%q', '%q');",(char *) msg->topic, (char *) msg->payload);
+    sqlite3_exec(data_base, query, 0, NULL, err);
+    sqlite3_free(query);
+    if (err != NULL) 
+        syslog(LOG_WARNING, "Failed to insert data into database");
 }
 
 int start_mossquitto (struct Topic *head, struct Configuration *config)
@@ -159,6 +153,8 @@ int start_mossquitto (struct Topic *head, struct Configuration *config)
     if (rc != 0){
         syslog(LOG_ERR, "Failed to initialize mossquito");
         goto cleanup2;
+    }else{
+        syslog (LOG_INFO,"Mosquitto initialized successfuly");
     }
     mosq = mosquitto_new("subscribe-test", true, head);
     if (config->username!=NULL  && config->password!=NULL)  
@@ -168,7 +164,7 @@ int start_mossquitto (struct Topic *head, struct Configuration *config)
             syslog(LOG_INFO, "Failed to add username or password");
 
     if (atoi(config->use_tls)==1)
-        if (!mosquitto_tls_set(mosq,"/etc/app_mqtt_crt/mosquitto.org.crt",NULL, NULL, NULL, NULL)== MOSQ_ERR_SUCCESS) 
+        if (!mosquitto_tls_set(mosq,CERTPATH,NULL, NULL, NULL, NULL)== MOSQ_ERR_SUCCESS) 
             syslog(LOG_WARNING, "Failed to set tls");
 
 	mosquitto_connect_callback_set(mosq, on_connect);
@@ -179,20 +175,18 @@ int start_mossquitto (struct Topic *head, struct Configuration *config)
         syslog(LOG_ERR, "Could not connect to Broker");
 		goto cleanup2;
 	}else{
-         syslog(LOG_ERR, "Connection successful");
+         syslog(LOG_INFO, "Connection to broker successful");
     }
     
 	rc = mosquitto_loop_start(mosq);
     if(rc) {
         syslog(LOG_ERR, "Failed to start mosquitto loop");
 		goto cleanup1;
-	}else{
-        syslog(LOG_ERR, "Loop started");
-    }
+	}
+    syslog (LOG_INFO,"Mosquitto loop started");
 
-    while(!interrupt) {  
-    
-    }
+    while(!interrupt) {  }
+
 	mosquitto_loop_stop(mosq, true);
 
 cleanup1:
@@ -213,16 +207,24 @@ int main(void)
     struct sigaction action;
     
     memset(&config, 0, sizeof(struct Configuration));
-
     openlog("app_mqtt", LOG_PID, LOG_USER);
+
     signal(SIGINT, signal_handler);
     signal(SIGTERM, signal_handler);
     sigaction(SIGTERM, &action, NULL);
-    syslog(LOG_INFO, "program started");
+
     rc = read_config_file(&head,&config);
     if (rc == -1){
         goto cleanup;
     }
+
+    if (sqlite3_open(DBPATH, &data_base) != 0){
+        syslog (LOG_ERR,"Failed to open database");
+        goto cleanup;
+    }
+    else
+        syslog (LOG_INFO,"Database opened");
+
     rc = start_mossquitto (head,&config);
 cleanup:
     while(head != NULL) { 
@@ -237,5 +239,6 @@ cleanup:
     free (config.port);
     free (config.username);
     free (config.use_tls);
+    sqlite3_close(data_base);
     return rc;   
 }                                                            

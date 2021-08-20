@@ -55,16 +55,13 @@ adress.maxlength = "256"
 adress.datatype = "string"
 
 local_port = s2:taboption( "misc", Value, "local_port", translate("Local Port"))
-local_port.placeholder = "1883"
 local_port.datatype = "port"
 
 username = s2:taboption( "misc", Value, "username", translate("Username"))
-username.placeholder = "testuotojas"
 username.datatype = "string"
 username.maxlength = "256"
 
 password = s2:taboption( "misc", Value, "password", translate("Password"))
-password.placeholder = "password"
 password.password = true
 password.datatype = "string"
 password.maxlength = "256"
