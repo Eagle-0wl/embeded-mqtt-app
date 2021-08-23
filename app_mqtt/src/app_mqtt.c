@@ -9,6 +9,7 @@
 #define DBPATH "/etc/app_mqtt_crt/messages.db"
 #define CONFFILE "/etc/config/mosquitto_client"
 #define CERTPATH "/etc/app_mqtt_crt/mosquitto.org.crt"
+
 volatile int interrupt = 0;
 sqlite3 *data_base = NULL;
 
@@ -161,7 +162,7 @@ int start_mossquitto (struct Topic *head, struct Configuration *config)
         if (mosquitto_username_pw_set(mosq, config->username ,config->password)==MOSQ_ERR_SUCCESS)
             syslog(LOG_INFO, "User name and password added successfuly");
         else
-            syslog(LOG_INFO, "Failed to add username or password");
+            syslog(LOG_WARNING, "Failed to add username or password");
 
     if (atoi(config->use_tls)==1)
         if (!mosquitto_tls_set(mosq,CERTPATH,NULL, NULL, NULL, NULL)== MOSQ_ERR_SUCCESS) 
