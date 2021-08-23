@@ -1,6 +1,6 @@
 <div class="cbi-section" id="cbi-<%=self.config%>-<%=self.sectiontype%>">
 	<% if self.title and #self.title > 0 then -%>
-		<h3 class="content-title" onclick="toggleContent(this, '<%=self.config%>.<%=self.sectiontype%>.broker.toggle')">
+		<h3 class="content-title" onclick="toggleContent(this, '<%=self.config%>.<%=self.sectiontype%>.subscriber.toggle')">
 			<div class="toggle-arrow expanded"><img src="<%=media%>/img/icons/arrow-toggle.svg"></div>
 			<%=self.title%>
 		</h3>
@@ -8,7 +8,7 @@
 	<% if self.description and #self.description > 0 then -%>
 		<span class="cbi-section-descr"><%=self.description%></span>
 	<%- end %>
-		<div id="<%=self.config%>.<%=self.sectiontype%>.broker.toggle" class="toggle-content">
+		<div id="<%=self.config%>.<%=self.sectiontype%>.subscriber.toggle" class="toggle-content">
 	<% local isempty = true for i, k in ipairs(self:cfgsections()) do -%>
 		<% if self.addremove then -%>
 			<div class="cbi-section-remove right">
@@ -80,7 +80,7 @@
 	<%- end %>
 </div>
 <script type="text/javascript">
-	checkToggled(document.getElementById("<%=self.config%>.<%=self.sectiontype%>.broker.toggle"),
-		'<%=self.config%>.<%=self.sectiontype%>.broker.toggle');
+	checkToggled(document.getElementById("<%=self.config%>.<%=self.sectiontype%>.subscriber.toggle"),
+		'<%=self.config%>.<%=self.sectiontype%>.subscriber.toggle');
 </script>
 </div>

@@ -1,5 +1,7 @@
 BIN:=app_mqtt
+CC:=gcc
 LDFLAGS:=-lmosquitto -lsqlite3
+CPPFLAGS:=-I$(CURDIR)
 SRC:=$(wildcard *.c)
 OBJS:=$(SRC:.c=.o)
 
@@ -8,6 +10,7 @@ OBJS:=$(SRC:.c=.o)
 all: $(BIN)
 
 $(BIN): $(OBJS)
-	$(CC) -o $@ $^ $(LDFLAGS) 
+	$(CC) $(CPPFLAGS) -o $@ $^ $(LDFLAGS)
+
 clean:
-	rm -f $(BIN) $(OBJS)
+	$(RM) $(BIN) $(OBJS)

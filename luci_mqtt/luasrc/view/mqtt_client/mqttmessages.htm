@@ -1,6 +1,6 @@
 <%-
 local sqlite = require "lsqlite3"
-local dbFilePath = "/etc/app_mqtt_crt/messages.db"
+local dbFilePath = "/usr/share/messages.db"
 local sys = require "luci.sys"
 message_data_list = {}
 
@@ -12,6 +12,7 @@ if db:prepare(query) then
     end
 end
 db:close()
+
 -%>
 
 <h3 class="content-title" onclick="toggleContent(this, '<%=self.config%>.<%=self.sectiontype%>.toggle')">

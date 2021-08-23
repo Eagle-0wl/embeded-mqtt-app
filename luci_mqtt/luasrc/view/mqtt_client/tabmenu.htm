@@ -3,7 +3,7 @@
 		<%- self.selected_tab = luci.http.formvalue("tab." .. self.config .. "." .. section) %>
 		<%- for _, tab in ipairs(self.tab_names) do if #self.tabs[tab].childs > 0 then %>
 			<%- if not self.selected_tab then self.selected_tab = tab end %>
-			<a onclick="this.blur(); show_topic(<%=tab=="client" and "1" or "0"%>); return cbi_t_switch('<%=self.config%>.<%=section%>', '<%=tab%>')"
+			<a onClick="this.blur(); show_topic(<%=tab=="client" and "1" or "0"%>); return cbi_t_switch('<%=self.config%>.<%=section%>', '<%=tab%>')"
 			   id="tab.<%=self.config%>.<%=section%>.<%=tab%>"
 			   href="<%=REQUEST_URI%>?tab.<%=self.config%>.<%=section%>=<%=tab%>"
 			   class="tab-item <%=(tab == self.selected_tab) and 'active' or ''%>">
