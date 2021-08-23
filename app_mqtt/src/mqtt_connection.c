@@ -8,7 +8,7 @@
 #include <mqtt_db.h>
 #include <mqtt_config_parsing.h>
 
-#define CERTPATH "/etc/app_mqtt_crt/mosquitto.org.crt"
+#define CERTPATH "/etc/ssl/certs/mosquitto.org.crt"
 
 volatile int interrupt = 0;
 
