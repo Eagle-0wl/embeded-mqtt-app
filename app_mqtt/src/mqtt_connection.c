@@ -34,6 +34,7 @@ void on_connect(struct mosquitto *mosq, void *obj, int rc) {
 
 void on_message(struct mosquitto *mosq, void *obj, const struct mosquitto_message *msg) {
     insert_message_to_database ((char *) msg->topic, (char *) msg->payload);
+    syslog (LOG_INFO,"%s %s",msg->topic, (char *) msg->payload);
 }
 
 int start_mossquitto (struct Topic *head, struct Configuration *config)

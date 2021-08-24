@@ -1,6 +1,6 @@
 BIN:=app_mqtt
 CC:=gcc
-LDFLAGS:=-lmosquitto -lsqlite3
+LDFLAGS:=-lmosquitto -lsqlite3 -luci
 CPPFLAGS:=-I$(CURDIR)
 SRC:=$(wildcard *.c)
 OBJS:=$(SRC:.c=.o)

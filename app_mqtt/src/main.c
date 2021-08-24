@@ -16,18 +16,21 @@ int main(void)
     memset(&config, 0, sizeof(struct Configuration));
     openlog("app_mqtt", LOG_PID, LOG_USER);
 
-    rc = read_config_file(&head,&config);
+    rc = uci_read_config(&head,&config);
     if (rc == -1){
         goto cleanup;
     }
-    if (open_db()==-1)
+    
+    if (open_db() == -1)
         goto cleanup;
     rc = check_if_table_exists();
     if (rc == -1){
         if (create_table() == -1)
             goto cleanup;
     }
+
     rc = start_mossquitto (head,&config);
+    
 cleanup:
     while(head != NULL) { 
         free(head->qos);
